@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5899C1DJM0"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="assets/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="assets/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="assets/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="assets/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <title>Marble Roulette</title>
+  <style lang="scss">
+    * {
+      box-sizing: border-box;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    div.copyright {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 12px;
+      z-index: 999;
+      width: 90%;
+      text-align: center;
+    }
+
+    div.copyright a {
+      color: white;
+    }
+
+    #settings {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      background: #666;
+      border-radius: 10px;
+      padding: 10px;
+      z-index: 999;
+      min-width: 50%;
+
+      display: flex;
+      visibility: visible;
+      opacity: 1;
+      transition: visibility 0s, opacity 1s linear;
+
+      &.hide {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      h3 {
+        padding: 0;
+        margin: 0;
+        font-size: 12pt;
+        color: #fefefe;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 5rem;
+        border: none;
+        background: #999;
+        font-size: 14pt;
+      }
+
+      button {
+        color: #fefefe;
+        background: #222;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        position: relative;
+        overflow: hidden;
+
+        &:active:after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      .icon {
+        background: currentColor;
+        mask-repeat: no-repeat;
+        mask-position: center center;
+        mask-size: contain;
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        vertical-align: middle;
+
+        &.play {
+          mask-image: url('assets/images/play.svg');
+        }
+
+        &.shuffle {
+          mask-image: url('assets/images/shuffle.svg');
+        }
+
+&.record {
+          mask-image: url('assets/images/record.svg');
+        }
+
+        &.map {
+          mask-image: url('assets/images/map.svg');
+        }
+
+        &.trophy {
+          mask-image: url('assets/images/trophy.svg');
+        }
+
+        &.bomb {
+          mask-image: url('assets/images/bomb.svg');
+        }
+
+        &.palette {
+          mask-image: url('assets/images/palette.svg');
+        }
+      }
+
+      div.left {
+        flex-grow: 1;
+        flex-shrink: 1;
+        order: 1;
+
+        .actions {
+          display: flex;
+          align-items: center;
+          justify-content: stretch;
+          gap: 2px;
+
+          div.sep {
+            flex-grow: 1;
+          }
+        }
+      }
+
+      div.right {
+        order: 2;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        div.row {
+          display: flex;
+          align-items: center;
+          height: 35px;
+
+          label {
+            width: 150px;
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding-left: 1rem;
+            color: white;
+          }
+        }
+      }
+
+      select {
+        height: 25px;
+        width: 100%;
+        border-radius: 5px;
+        background: #999;
+      }
+
+      input[type=checkbox] {
+        width: 0;
+        height: 25px;
+        position: relative;
+        vertical-align: middle;
+
+        &:before {
+          position: absolute;
+          content: '';
+          display: inline-block;
+          width: 50px;
+          height: 25px;
+          border-radius: 25px;
+          background: #999;
+          top: 0;
+          left: 0;
+        }
+
+        &:after {
+          position: absolute;
+          top: 0;
+          left: 0;
+          content: '';
+          border-radius: 25px;
+          width: 25px;
+          height: 25px;
+          background: #ccc;
+          transition: transform .2s;
+        }
+
+        &:checked:after {
+          transform: translateX(100%);
+          background: white;
+        }
+
+        &:checked:before {
+          content: '';
+          background: #00baff;
+        }
+      }
+
+      .btn-group {
+        display: flex;
+        justify-content: stretch;
+
+        & > * {
+          box-sizing: border-box;
+          flex-grow: 0;
+          flex-shrink: 0;
+          overflow: hidden;
+          height: 25px;
+          width: 33%;
+          border-radius: 0;
+          background: #999;
+          border: none;
+          padding: 0;
+          color: #fefefe;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:first-child {
+            border-radius: 10px 0 0 10px;
+          }
+
+          &:last-child {
+            border-radius: 0 10px 10px 0;
+          }
+
+          &.active:before {
+            content: '';
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            vertical-align: middle;
+            mask-image: url('assets/images/check.svg');
+            mask-repeat: no-repeat;
+            background: white;
+          }
+
+          &.active {
+            background: #333;
+          }
+        }
+
+        input[type=number] {
+          box-sizing: border-box;
+          text-align: center;
+        }
+      }
+    }
+
+#skins {
+      display: none;
+      position: fixed;
+      overflow: hidden;
+      top: 50%;
+      left: 50%;
+      width: 520px;
+      max-width: 90%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      z-index: 1002;
+      color: #333;
+      flex-direction: column;
+      max-height: 80vh;
+
+      h1 {
+        background-color: #00baff;
+        margin: 0;
+        padding: 10px 5px 10px .5em;
+        border-bottom: 1px solid #333;
+        display: flex;
+        align-items: center;
+        font-size: 18pt;
+
+        &:before {
+          content: '';
+          display: inline-block;
+          width: 1em;
+          height: 1em;
+          background: #333;
+          mask-image: url('assets/images/palette.svg');
+          mask-repeat: no-repeat;
+          mask-size: contain;
+          margin-right: 0.3em;
+        }
+      }
+
+      p.skin-hint {
+        margin: 0;
+        padding: 10px 1em 0;
+        font-size: 10pt;
+        color: #555;
+      }
+
+      ul#skinList {
+        list-style: none;
+        margin: 0;
+        padding: 10px 1em;
+        overflow-y: auto;
+        flex-grow: 1;
+
+        li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 0;
+          border-bottom: 1px solid #ddd;
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+
+        .skin-preview {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          background: #ddd center / cover no-repeat;
+          border: 2px solid #999;
+        }
+
+        .skin-name {
+          flex-grow: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-weight: bold;
+        }
+
+        button {
+          color: #fefefe;
+          background: #222;
+          border: none;
+          border-radius: 5px;
+          padding: 6px 10px;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+
+        button.skin-remove {
+          background: #a33;
+        }
+
+        button[disabled] {
+          opacity: .4;
+          cursor: default;
+        }
+      }
+
+      p.skin-empty {
+        padding: 1.5em 1em;
+        text-align: center;
+        color: #777;
+        margin: 0;
+      }
+
+      div.skin-action {
+        display: flex;
+        justify-content: end;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+
+        button {
+          color: #fefefe;
+          background: #222;
+          border: none;
+          border-radius: 20px;
+          padding: 5px 10px;
+          width: 50%;
+          height: 44px;
+          cursor: pointer;
+        }
+      }
+    }
+
+@media screen and (max-width: 750px) {
+#settings {
+        bottom: calc(2.5rem + 60px);
+        display: block;
+        min-width: 0;
+        max-width: 100%;
+        width: calc(100% - 2rem);
+        overflow: hidden;
+        opacity: 1;
+        visibility: visible;
+        transition: visibility 0s, opacity 1s linear;
+
+        &.hide {
+          opacity: 0;
+          visibility: hidden;
+        }
+
+        div.right div.row {
+          height: auto;
+          display: block;
+          border-bottom: 1px solid #555;
+          padding: .5rem 0;
+
+          label {
+            width: 100%;
+            margin-bottom: .5rem;
+            padding-left: 0;
+            display: block;
+          }
+
+          .icon {
+            width: 15px;
+            height: 15px;
+          }
+        }
+      }
+
+
+}
+
+    div.toast {
+      position: fixed;
+      transform: translate(-50%, 0);
+      padding: 8px;
+      border-radius: 4px;
+      background: #ccc;
+      overflow: hidden;
+      bottom: 10px;
+      left: 50%;
+      z-index: 1000;
+      animation: .2s linear fade-in, .2s linear 1s reverse fade-in;
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 100%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+  </style>
+</head>
+<body>
+<script type="module" src="./src/index.ts"></script>
+<script type="text/javascript">
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+
+  gtag('js', new Date());
+  gtag('config', 'G-5899C1DJM0');
+
+  function getNames() {
+    const value = document.querySelector('#in_names').value.trim();
+    return value.split(/[,\r\n]/g).map(v => v.trim()).filter(v => !!v);
+  }
+
+  function parseName(nameStr) {
+    const weightRegex = /(\/\d+)/;
+    const countRegex = /(\*\d+)/;
+    const hasWeight = weightRegex.test(nameStr);
+    const hasCount = countRegex.test(nameStr);
+    const name = /^\s*([^\/*]+)?/.exec(nameStr)[1];
+    const weight = hasWeight ? parseInt(weightRegex.exec(nameStr)[1].replace('/', '')) : 1;
+    const count = hasCount ? parseInt(countRegex.exec(nameStr)[1].replace('*', '')) : 1;
+    return {
+      name,
+      weight,
+      count,
+    };
+  }
+
+  function getReady() {
+    const names = getNames();
+    window.roullete.setMarbles(names);
+    ready = names.length > 0;
+    localStorage.setItem('mbr_names', names.join(','));
+    switch (winnerType) {
+      case 'first':
+        setWinnerRank(1);
+        break;
+      case 'last':
+        const total = window.roullete.getCount();
+        setWinnerRank(total);
+        break;
+    }
+  }
+
+  function setWinnerRank(rank) {
+    document.querySelector('#in_winningRank').value = rank;
+    window.options.winningRank = rank - 1;
+    window.roullete.setWinningRank(window.options.winningRank);
+
+    if (winnerType === 'first') {
+      document.querySelector('.btn-first-winner').classList.toggle('active', true);
+      document.querySelector('.btn-last-winner').classList.toggle('active', false);
+      document.querySelector('#in_winningRank').classList.toggle('active', false);
+    } else if (winnerType === 'last') {
+      document.querySelector('.btn-first-winner').classList.toggle('active', false);
+      document.querySelector('.btn-last-winner').classList.toggle('active', true);
+      document.querySelector('#in_winningRank').classList.toggle('active', false);
+    } else if (winnerType === 'custom') {
+      document.querySelector('.btn-first-winner').classList.toggle('active', false);
+      document.querySelector('.btn-last-winner').classList.toggle('active', false);
+      document.querySelector('#in_winningRank').classList.toggle('active', true);
+    }
+  }
+
+
+  let ready = false;
+  let winnerType = 'first';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initialize();
+  });
+
+  function initialize() {
+    if (!window.roullete || !window.roullete.isReady) {
+      console.log('does not loaded yet');
+      setTimeout(initialize, 100);
+      return;
+    }
+    console.log('initializing start');
+
+    const savedNames = localStorage.getItem('mbr_names');
+    if (savedNames) {
+      document.querySelector('#in_names').value = savedNames;
+    }
+    document.querySelector('#in_names').addEventListener('input', () => {
+      getReady();
+    });
+
+    document.querySelector('#in_names').addEventListener('blur', () => {
+      const nameSource = getNames();
+      const nameSet = new Set();
+      const nameCounts = {};
+      nameSource.forEach(nameSrc => {
+        const name = parseName(nameSrc);
+        const key = name.weight > 1 ? `${name.name}/${name.weight}` : name.name;
+        if (!nameSet.has(key)) {
+          nameSet.add(key);
+          nameCounts[key] = 0;
+        }
+        nameCounts[key] += name.count;
+      });
+      const result = [];
+      Object.keys(nameCounts).forEach(key => {
+        if (nameCounts[key] > 1) {
+          result.push(`${key}*${nameCounts[key]}`);
+        } else {
+          result.push(key);
+        }
+      });
+
+      const oldValue = document.querySelector('#in_names').value;
+      const newValue = result.join(',');
+
+      if (oldValue !== newValue) {
+        document.querySelector('#in_names').value = newValue;
+        getReady();
+      }
+    });
+
+    document.querySelector('#btnShuffle').addEventListener('click', () => {
+      getReady();
+    });
+
+    document.querySelector('#btnStart').addEventListener('click', () => {
+      if (!ready) return;
+      gtag && gtag('event', 'start', {
+        'event_category': 'roulette',
+        'event_label': 'start',
+        'value': window.roullete.getCount(),
+      });
+      window.roullete.start();
+      document.querySelector('#settings').classList.add('hide');
+    });
+
+    document.querySelector('#chkAutoRecording').addEventListener('change', (e) => {
+      window.options.autoRecording = e.target.matches(':checked');
+      window.roullete.setAutoRecording(window.options.autoRecording);
+    });
+
+    document.querySelector('#chkSkill').addEventListener('change', (e) => {
+      window.options.useSkills = e.target.matches(':checked');
+      window.roullete.setWinningRank(window.options.winningRank);
+    });
+
+    document.querySelector('#in_winningRank').addEventListener('change', (e) => {
+      const v = parseInt(e.target.value, 10);
+      winnerType = 'custom';
+      setWinnerRank(isNaN(v) ? 0 : v);
+    });
+
+    document.querySelector('.btn-last-winner').addEventListener('click', () => {
+      const total = window.roullete.getCount();
+      winnerType = 'last';
+      setWinnerRank(total);
+    });
+    document.querySelector('.btn-first-winner').addEventListener('click', () => {
+      winnerType = 'first';
+      setWinnerRank(1);
+    });
+
+    document.querySelector('#btnShake').addEventListener('click', () => {
+      window.roullete.shake();
+      gtag('event', 'shake', {
+        'event_category': 'roulette',
+        'event_label': 'shake',
+        'value': 1,
+      });
+    });
+
+    window.roullete.addEventListener('goal', () => {
+      ready = false;
+      setTimeout(() => {
+        document.querySelector('#settings').classList.remove('hide');
+      }, 3000);
+    });
+    window.roullete.addEventListener('shakeAvailableChanged', (e) => {
+      document.querySelector('#inGame').classList.toggle('hide', !e.detail);
+    });
+    window.roullete.addEventListener('message', (e) => {
+      simpleToast(e.detail);
+    });
+
+    document.querySelector('#btnShuffle').click();
+
+    const mapSelector = document.querySelector('#sltMap');
+
+    // Rebuilt whenever the editor adds or removes a map.
+    function rebuildMapList(selectedIndex) {
+      const previous = selectedIndex ?? Number(mapSelector.value) ?? 0;
+      mapSelector.innerHTML = '';
+
+      window.roullete.getMaps().forEach((map) => {
+        const option = document.createElement('option');
+        option.value = map.index;
+        if (map.custom) {
+          // A user-written title: show it as-is, never translate it.
+          option.textContent = '★ ' + map.title;
+        } else {
+          option.textContent = map.title;
+          option.setAttribute('data-trans', '');
+          window.translateElement(option);
+        }
+        mapSelector.append(option);
+      });
+
+      const clamped = Math.min(previous, mapSelector.options.length - 1);
+      mapSelector.value = String(Math.max(0, clamped));
+    }
+
+    rebuildMapList(0);
+
+    mapSelector.addEventListener('change', (e) => {
+      window.roullete.setMap(Number(e.target.value));
+    });
+
+    // ---- Map editor overlay -------------------------------------------
+    const editorOverlay = document.querySelector('#editorOverlay');
+    let mapEditor = null;
+
+    const closeEditor = () => {
+      editorOverlay.classList.remove('open');
+      document.querySelector('#settings').classList.remove('hide');
+    };
+
+    const onMapsChanged = async () => {
+      const index = await window.roullete.reloadCustomMaps();
+      rebuildMapList(index);
+    };
+
+    document.querySelector('#btnEditor').addEventListener('click', () => {
+      editorOverlay.classList.add('open');
+      document.querySelector('#settings').classList.add('hide');
+
+      if (!mapEditor) {
+        mapEditor = new window.MapEditor(
+          document.querySelector('#editorRoot'),
+          { onClose: closeEditor, onMapsChanged },
+        );
+        window.__gameEditor = mapEditor;
+      } else {
+        mapEditor.refresh();
+      }
+    });
+
+    function simpleToast(msg) {
+      const toast = document.createElement('div');
+      toast.classList.add('toast');
+      toast.innerHTML = msg;
+
+      if (window.translateElement) {
+        console.log('try to translate');
+        window.translateElement(toast);
+      }
+
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        document.body.removeChild(toast);
+      }, 1200);
+    }
+
+    // ---- Marble skins -------------------------------------------------
+    // Images are read locally, shrunk, and stored in IndexedDB.
+    // Nothing is ever sent to a server.
+    const skinPanel = document.querySelector('#skins');
+    const skinList = document.querySelector('#skinList');
+    const skinFileInput = document.querySelector('#skinFileInput');
+    const previewUrls = [];
+    let pendingSkinName = null;
+
+    function trans(text) {
+      const probe = document.createElement('span');
+      probe.setAttribute('data-trans', '');
+      probe.innerText = text;
+      if (window.translateElement) window.translateElement(probe);
+      return probe.innerText;
+    }
+
+    function releasePreviewUrls() {
+      while (previewUrls.length) URL.revokeObjectURL(previewUrls.pop());
+    }
+
+    function renderSkinList() {
+      releasePreviewUrls();
+      skinList.innerHTML = '';
+
+      const names = window.roullete.getMarbleNames();
+      if (names.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'skin-empty';
+        empty.innerText = trans('Enter some names first');
+        skinList.append(empty);
+        return;
+      }
+
+      names.forEach((name) => {
+        const blob = window.roullete.getSkinBlob(name);
+
+        const li = document.createElement('li');
+
+        const preview = document.createElement('div');
+        preview.className = 'skin-preview';
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          previewUrls.push(url);
+          preview.style.backgroundImage = `url("${url}")`;
+        }
+
+        const label = document.createElement('span');
+        label.className = 'skin-name';
+        label.innerText = name;
+
+        const pick = document.createElement('button');
+        pick.innerText = trans('Choose image');
+        pick.addEventListener('click', () => {
+          pendingSkinName = name;
+          skinFileInput.value = '';
+          skinFileInput.click();
+        });
+
+        const remove = document.createElement('button');
+        remove.className = 'skin-remove';
+        remove.innerText = trans('Remove');
+        remove.disabled = !blob;
+        remove.addEventListener('click', async () => {
+          await window.roullete.removeSkin(name);
+          renderSkinList();
+        });
+
+        li.append(preview, label, pick, remove);
+        skinList.append(li);
+      });
+    }
+
+    skinFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file || !pendingSkinName) return;
+      const name = pendingSkinName;
+      pendingSkinName = null;
+
+      try {
+        await window.roullete.setSkin(name, file);
+      } catch (err) {
+        if (err && err.message === 'FILE_TOO_LARGE') {
+          simpleToast(trans('That image is too large (max 8MB)'));
+        } else {
+          simpleToast(trans('That file is not a supported image'));
+        }
+      }
+      renderSkinList();
+    });
+
+    document.querySelector('#btnSkins').addEventListener('click', () => {
+      renderSkinList();
+      skinPanel.style.display = 'flex';
+    });
+
+    document.querySelector('#closeSkins').addEventListener('click', () => {
+      skinPanel.style.display = 'none';
+      releasePreviewUrls();
+    });
+
+
+
+  }
+</script>
+<div id="settings" class="settings">
+  <div class="right">
+    <div class="row">
+      <label>
+        <i class="icon map"></i>
+        <span data-trans>Map</span>
+      </label>
+      <select id="sltMap"></select>
+    </div>
+    <div class="row">
+      <label>
+        <i class="icon record"></i>
+        <span data-trans>Recording</span>
+      </label>
+      <input type="checkbox" id="chkAutoRecording" />
+    </div>
+    <div class="row">
+      <label>
+        <i class="icon trophy"></i>
+        <span data-trans>The winner is</span>
+      </label>
+      <div class="btn-group">
+        <button class="btn-winner btn-first-winner active" data-trans>First</button>
+        <button class="btn-winner btn-last-winner" data-trans>Last</button>
+        <input type="number" id="in_winningRank" value="1" min="1" />
+      </div>
+    </div>
+    <div class="row">
+      <label>
+        <i class="icon bomb"></i>
+        <span data-trans>Using skills</span>
+      </label>
+      <input type="checkbox" id="chkSkill" checked />
+    </div>
+  </div>
+  <div class="left">
+    <h3 data-trans>Enter names below</h3>
+    <textarea id="in_names" placeholder="Input names separated by commas or line feed here" data-trans="placeholder">짱구*5, 짱아*10, 봉미선*3</textarea>
+    <div class="actions">
+      <button id="btnSkins" title="Marble skins">
+        <i class="icon palette"></i>
+      </button>
+      <button id="btnEditor" title="Map editor">
+        <i class="icon map"></i>
+      </button>
+      <div class="sep"></div>
+      <button id="btnShuffle">
+        <i class="icon shuffle"></i>
+        <span data-trans>Shuffle</span>
+      </button>
+      <button id="btnStart">
+        <i class="icon play"></i>
+        <span data-trans>Start</span>
+      </button>
+    </div>
+  </div>
+</div>
+<div id="inGame" class="settings hide">
+  <button id="btnShake" data-trans>Shake!</button>
+</div>
+<div id="editorOverlay"><div id="editorRoot"></div></div>
+<div id="skins">
+  <h1 data-trans>Marble skins</h1>
+  <p class="skin-hint" data-trans>Pick an image for each name. Images stay in this browser and are never uploaded.</p>
+  <ul id="skinList"></ul>
+  <div class="skin-action">
+    <button id="closeSkins" data-trans>Close</button>
+  </div>
+</div>
+<input type="file" id="skinFileInput" accept="image/*" style="display:none" />
+<div class="copyright">&copy; 2025.<a href="https://lazygyu.net" target="_blank">lazygyu</a></div>
+</body>
+</html>
