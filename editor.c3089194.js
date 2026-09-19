@@ -1,0 +1,2 @@
+import"./RandomPick.afe250a6.js";var e=globalThis,r={},t={},o=e.parcelRequire5cc2;null==o&&((o=function(e){if(e in r)return r[e].exports;if(e in t){var o=t[e];delete t[e];var i={id:e,exports:{}};return r[e]=i,o.call(i.exports,i,i.exports),i.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,r){t[e]=r},e.parcelRequire5cc2=o),o.register;var i=o("bLNc7");let n=document.getElementById("editorRoot");if(n){let e=new(0,i.MapEditor)(n);window.__editor=e}
+//# sourceMappingURL=editor.c3089194.js.map
